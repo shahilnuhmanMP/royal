@@ -111,7 +111,7 @@ class _InputTextState extends State<InputText> {
             minLines: widget.isTextArea ? 2 : null,
             onChanged: widget.onChanged,
             onFieldSubmitted: widget.onSubmitted,
-            cursorColor: colors(context).text,
+            cursorColor: colors(context).primary,
             decoration: InputDecoration(
               contentPadding: EdgeInsets.symmetric(vertical: 14.0),
               hintText: isFocused ? '' : widget.hint,

@@ -9,6 +9,7 @@ import 'package:royal_class_app/support/app_theme.dart';
 import 'package:royal_class_app/modules/home/riverpod/provider/category_provider.dart';
 import 'package:royal_class_app/modules/home/widget/category_widget.dart';
 import 'package:royal_class_app/modules/home/widget/product_widget.dart';
+import 'package:royal_class_app/support/auth.dart';
 import 'package:royal_class_app/support/common_widget/bottom_nav_bar_widget.dart';
 import 'package:royal_class_app/support/transition.dart';
 import 'dart:math' as math;
@@ -25,6 +26,9 @@ class HomeScreenPage extends ConsumerWidget {
     ValueNotifier<int> selectedCategoryIndex = ValueNotifier(0);
     var categoryList = ref.watch(categoryProvider);
     var productList = ref.watch(productProvider);
+    signOut() {
+      Auth().signOut();
+    }
 
     return Stack(
       children: [
@@ -61,7 +65,17 @@ class HomeScreenPage extends ConsumerWidget {
                         color: colors(context).text,
                         fontWeight: FontWeight.w700)),
               ),
-              actions: [SearchWidget()],
+              actions: [
+                SearchWidget(),
+                GestureDetector(
+                  onTap: () {
+                    signOut();
+                  },
+                  child: SearchWidget(
+                    iconImage: "assets/images/chevron.left.png",
+                  ),
+                )
+              ],
             ),
           ),
           bottomNavigationBar: BottomNavigation(activeIcon: "cycle"),
@@ -154,17 +168,18 @@ class HomeScreenPage extends ConsumerWidget {
 class SearchWidget extends StatelessWidget {
   const SearchWidget({
     super.key,
+    this.iconImage,
   });
-
+  final String? iconImage;
   @override
   Widget build(BuildContext context) {
     return Container(
       height: 44,
       width: 44,
-      padding: EdgeInsets.all(11),
+      padding: const EdgeInsets.all(11),
       margin: EdgeInsets.only(right: 10),
       child: Image.asset(
-        "assets/images/search.png",
+        iconImage ?? "assets/images/search.png",
       ),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(15),

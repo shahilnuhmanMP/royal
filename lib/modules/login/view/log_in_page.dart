@@ -1,19 +1,72 @@
 import 'dart:ui';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:royal_class_app/support/app_theme.dart';
-import 'package:royal_class_app/modules/home/view/homePage.dart';
+import 'package:royal_class_app/support/auth.dart';
 import 'package:royal_class_app/support/common_widget/primary_button.dart';
 import 'package:royal_class_app/support/common_widget/primary_text_field.dart';
 
-class LoginPage extends StatelessWidget {
+class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
 
   @override
+  State<LoginPage> createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
+  String? errormessage;
+  bool isLogin = false;
+  TextEditingController emailController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
+
+  signInwithUserEmailAndPassword() async {
+    try {
+      if (emailController.text.isNotEmpty &&
+          passwordController.text.isNotEmpty) {
+        await Auth().signInWithUserEmailAndPassword(
+          email: emailController.text,
+          password: passwordController.text,
+        );
+      } else {
+        setState(() {
+          errormessage = "Please fill all the fields";
+        });
+      }
+    } on FirebaseAuthException catch (e) {
+      setState(() {
+        errormessage = e.message;
+      });
+    }
+  }
+
+  createwithUserEmailAndPassword() async {
+    try {
+      if (emailController.text.isNotEmpty &&
+          passwordController.text.isNotEmpty) {
+        await Auth().createUserEmailAndPassword(
+          email: emailController.text,
+          password: passwordController.text,
+        );
+      } else {
+        setState(() {
+          errormessage = "Please fill all the fields";
+        });
+      }
+    } on FirebaseAuthException catch (e) {
+      setState(() {
+        errormessage = e.message;
+      });
+    }
+  }
+
+  Widget _errorMessage() {
+    return Text(errormessage ?? "");
+  }
+
+  @override
   Widget build(BuildContext context) {
-    TextEditingController emailController = TextEditingController();
-    TextEditingController passwordController = TextEditingController();
     return GestureDetector(
       onTap: () {
         FocusScope.of(context).unfocus();
@@ -84,6 +137,7 @@ class LoginPage extends StatelessWidget {
                         child: InputText(
                           textEditingController: emailController,
                           hint: "Email address",
+                          inputTextStyle: TextStyle(color: Colors.white),
                         ),
                       ),
                       Padding(
@@ -92,17 +146,53 @@ class LoginPage extends StatelessWidget {
                           textEditingController: passwordController,
                           hint: "Password",
                           isObscure: true,
+                          inputTextStyle: TextStyle(color: Colors.white),
                         ),
                       ),
                       Padding(
                         padding: const EdgeInsets.symmetric(vertical: 0),
                         child: PrimaryButton(
                             color: colors(context).black,
-                            text: "Login",
+                            text: isLogin == false ? " SignUp" : "  Login",
                             onPressed: () {
-                              Navigator.push(context, HomeScreenPage.route());
+                              isLogin == true
+                                  ? signInwithUserEmailAndPassword()
+                                  : createwithUserEmailAndPassword();
                             }),
-                      )
+                      ),
+                      Row(
+                        children: [
+                          Text(
+                            isLogin == true
+                                ? "Dont Have an Account?"
+                                : "Already have an Account",
+                            style: TextStyle(color: Colors.white),
+                          ),
+                          GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                isLogin = !isLogin;
+                              });
+                            },
+                            child: Text(
+                              isLogin == true ? " SignUp" : "  Login",
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                        ],
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 40.0),
+                        child: Center(
+                          child: Text(
+                            errormessage ?? "",
+                            style: TextStyle(
+                                color: Colors.red, fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                      ),
                     ]),
               ),
             ),

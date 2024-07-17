@@ -4,13 +4,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:royal_class_app/firebase_options.dart';
 import 'package:royal_class_app/support/app_theme.dart';
 import 'package:royal_class_app/support/app_theme_provider.dart';
-import 'package:royal_class_app/modules/login/view/log_in_page.dart';
+import 'package:royal_class_app/support/widget_tree.dart';
 
-void main() async{
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
-);
+  );
   runApp(const ProviderScope(child: MyApp()));
 }
 
@@ -30,7 +30,7 @@ class _MyAppState extends ConsumerState<MyApp> {
           context,
           ref.watch(
               appThemeProvider)), // Get app theme based on current context and theme provider state
-      home: const LoginPage(), // Set LoginPage as the home screen
+      home: const WidgetTree(), // Set LoginPage as the home screen
     );
   }
 }
